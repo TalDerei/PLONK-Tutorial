@@ -2,6 +2,7 @@
 
 # Compile circuit.circom circuit 
 circom ./circuits/circuit.circom --sym --wasm --r1cs -o ./build/plonk
+snarkjs r1cs info ./build/plonk/circuit.r1cs
 
 # Generate verification key based on Hermez 'Powers of Tau' MPC Ceremony
 snarkjs plonk setup ./build/plonk/circuit.r1cs ./build/plonk/powersOfTau28_hez_final_16.ptau ./build/plonk/circuit_final.zkey

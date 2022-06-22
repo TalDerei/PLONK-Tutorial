@@ -23,7 +23,7 @@ pragma solidity >=0.7.0 <0.9.0;
 
 contract PlonkVerifier {
     
-    uint16 constant n =   8;
+    uint32 constant n =   8;
     uint16 constant nPublic =  1;
     uint16 constant nLagrange = 1;
     
@@ -102,7 +102,6 @@ contract PlonkVerifier {
     
     
     uint16 constant lastMem = 704;
-
 
     function verifyProof(bytes memory proof, uint[] memory pubSignals) public view returns (bool) {
         assembly {
@@ -199,12 +198,22 @@ contract PlonkVerifier {
                 // Points are checked in the point operations precompiled smart contracts
             }
             
-            function calculateChallanges(pProof, pMem) {
+            function calculateChallanges(pProof, pMem, pPublic) {
             
                 let a
                 let b
+
                 
-                b := mod(keccak256(add(pProof, pA), 192), q) 
+                mstore( add(pMem, 704 ), mload( add( pPublic, 32)))
+                
+                mstore( add(pMem, 736 ), mload( add( pProof, pA)))
+                mstore( add(pMem, 768 ), mload( add( pProof, add(pA,32))))
+                mstore( add(pMem, 800 ), mload( add( pProof, add(pA,64))))
+                mstore( add(pMem, 832 ), mload( add( pProof, add(pA,96))))
+                mstore( add(pMem, 864 ), mload( add( pProof, add(pA,128))))
+                mstore( add(pMem, 896 ), mload( add( pProof, add(pA,160))))
+                
+                b := mod(keccak256(add(pMem, lastMem), 224), q) 
                 mstore( add(pMem, pBeta), b)
                 mstore( add(pMem, pGamma), mod(keccak256(add(pMem, pBeta), 32), q))
                 mstore( add(pMem, pAlpha), mod(keccak256(add(pProof, pZ), 64), q))
@@ -602,7 +611,7 @@ contract PlonkVerifier {
             mstore(0x40, add(pMem, lastMem))
             
             checkInput(proof)
-            calculateChallanges(proof, pMem)
+            calculateChallanges(proof, pMem, pubSignals)
             calculateLagrange(pMem)
             calculatePl(pMem, pubSignals)
             calculateT(proof, pMem)
