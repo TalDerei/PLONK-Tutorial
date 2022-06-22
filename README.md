@@ -1,4 +1,4 @@
-PLONK Tutorial
+# PLONK Tutorial
 README adopted from https://github.com/enricobottazzi/ZKverse. Special thanks to Enrico from Polygon ID!
 
 # **Introduction to Zero Knowledge Proof**
