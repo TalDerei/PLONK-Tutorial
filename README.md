@@ -86,6 +86,8 @@ Runs unit tests using etherJS and hardhat
 
 # **Circom and SnarkJS Demo**
 
+### Execute scripts
+
 The demo illustrates a **range proof**: proving a number is within a range without revealing the actual number. This could be useful in applications that require, for example, proving your income is in a specified range when applying for a credit card without revealing your specific income. 
 
 The scripts contain all the information neccessary to generate groth16 and plonk proofs for circom circuits. 
@@ -93,6 +95,8 @@ The scripts contain all the information neccessary to generate groth16 and plonk
 1. Install dependecies with `npm install` in the root directory.
 2. Run the groth16 and plonk scripts with `sh scripts/compile_groth16.sh` and `sh scripts/compile_plonk.sh`.
 3. Run `npx hardhat test` to run the unit tests.
+
+### Manually run commands
 
 If you prefer to run the commands **manually**, the plonk setup is explained in-depth and the commands are described below.
 
