@@ -1,18 +1,33 @@
 pragma circom 2.0.0;
 
-// Circuit performs a simple multiplication of two signals
+include "../node_modules/circomlib/circuits/comparators.circom";
 
-template Circuit () {  
+// Range proof circuit 
+template RangeProof(n) {
+    // Max field size is 252 bits
+    assert(n <= 252);
 
-    // Declaration of signals
-   signal input a;  
-   signal input b;
-   signal input c;
-   signal output d;  
-   
-   // Constraints  
-   signal x <== a * b;
-   d <== x * c;  
-}
+    // Private and public inputs; Check whether input is within range[lowerBound,upperBound]
+    signal input in;            
+    signal input lowerBound;    
+    signal input upperBound;    
+    signal output out;
 
-component main = Circuit();
+    // Instantiate templates as components
+    component low = LessEqThan(n);
+    component high = GreaterEqThan(n);
+
+    // Check whether the input is greater than or equal to the lower bound
+    high.in[0] <== in;
+    high.in[1] <== lowerBound;
+    high.out === 1;
+
+    // Check whether the input is less than or equal to the upper bound
+    low.in[0] <== in;
+    low.in[1] <== upperBound;
+    low.out === 1;
+
+    out <== high.out * low.out;
+ }
+
+component main = RangeProof(32);

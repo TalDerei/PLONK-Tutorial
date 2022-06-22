@@ -13,8 +13,11 @@ echo 'Generating circuit.r1cs & circuit.sym & circuit.wasm'
 circom $TARGET_CIRCUIT --r1cs --wasm --sym
 snarkjs r1cs info circuit.r1cs
 
-# ## Start Powers of Tau ceremony (Trusted Ceremony)
-snarkjs powersoftau new bn128 10 pot12_0000.ptau -v
+## Generate the witness
+node circuit_js/generate_witness.js circuit_js/circuit.wasm input.json witness.wtns
+
+## Start Powers of Tau ceremony (Trusted Ceremony)
+snarkjs powersoftau new bn128 8 pot12_0000.ptau -v
 
 ## Contribute to ceremony by adding entropy
 snarkjs powersoftau contribute pot12_0000.ptau pot12_0001.ptau --name="First contribution" -v
@@ -32,8 +35,15 @@ echo $ENTROPY_FOR_ZKEY | snarkjs zkey contribute circuit_0000.zkey circuit_final
 echo "Generating verification_key.json"
 snarkjs zkey export verificationkey circuit_final.zkey verification_key.json
 
-## Build verifier.sol
+## Generate proof
+snarkjs groth16 prove circuit_final.zkey witness.wtns proof.json public.json
+
+## Verify proof 
+snarkjs groth16 verify verification_key.json public.json proof.json
+
+## Build verifier.sol verification contract to verify proof inside solidity smart contract as well!
 echo 'Generating groth16_verifier.sol'
 cd ../../contracts/
-
 snarkjs zkey export solidityverifier ../build/groth16/circuit_final.zkey groth16_verifier.sol
+
+

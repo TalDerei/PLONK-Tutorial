@@ -15,10 +15,8 @@ describe("Groth16", function () {
 
     it("Should return true for correct proof", async function () {
 
-        const { proof, publicSignals } = await groth16.fullProve({"a":"1","b":"2","c":"3"}, "build/groth16/circuit_js/circuit.wasm","build/groth16/circuit_final.zkey");
-        
-        console.log('1x2x3 =',publicSignals[0]);
-        
+        const { proof, publicSignals } = await groth16.fullProve({"in":"2","lowerBound":"1","upperBound":"3"}, "build/groth16/circuit_js/circuit.wasm","build/groth16/circuit_final.zkey");
+                
         const editedPublicSignals = unstringifyBigInts(publicSignals);
         const editedProof = unstringifyBigInts(proof);
         const calldata = await groth16.exportSolidityCallData(editedProof, editedPublicSignals);
@@ -52,9 +50,7 @@ describe("PLONK", function () {
     });
 
     it("Should return true for correct proof", async function () {
-        const { proof, publicSignals } = await plonk.fullProve({"a":"1","b":"2","c":"3"}, "build/plonk/circuit_js/circuit.wasm","build/plonk/circuit_final.zkey");
-
-        console.log('1x2 =',publicSignals[0]);
+        const { proof, publicSignals } = await plonk.fullProve({"in":"2","lowerBound":"1","upperBound":"3"}, "build/plonk/circuit_js/circuit.wasm","build/plonk/circuit_final.zkey");
 
         const editedPublicSignals = unstringifyBigInts(publicSignals);
         const editedProof = unstringifyBigInts(proof);
