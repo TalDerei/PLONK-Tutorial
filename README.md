@@ -59,13 +59,44 @@ Zero-knowledge proof is a method by which one party (the prover) can prove to an
 
 **This is the magic of privacy enabled by zkp**
 
+# Tutorial Structure
+
+```Build```
+
+Groth16 and plonk binary files, prover/verification keys, and Hermez Power's of Tau Ceremony
+
+```Circuits```
+
+Circom circuits 
+
+```Contracts```
+
+Solidity verification smart contracts 
+
+```Scripts```
+
+Runs groth16 and plonk prover and deploys smart contracts
+
+```Test```
+
+Runs unit tests using etherJS and hardhat
+
+# Tools and Resources
+
+- Circom 2 (ZK-SNARK Compiler)<br />
+- SnarkyJS (Typescript/Javascript Framework for zk-SNARKs)<br />
+- Solidity (Smart Contract Programming Language)
+- Ether.js / Hardhat / Ganache<br />
+
 # **Circom and SnarkJS Demo**
 
-The demo illustrates a range proof: proving a number is within a range without revealing the actual number, which could be useful in applications like proving our income when applying for a credit card. The scripts contain all the information neccessary to generate groth16 and plonk proofs for circom circuits. 
+The demo illustrates a range proof: proving a number is within a range without revealing the actual number, which could be useful in applications like proving your income is in a required range when applying for a credit card without revealing your income. 
 
-1. Install dependecies with `npm install` in the root directory
-2. Run the groth16 and plonk scripts with `sh scripts/compile_groth16.sh` and `sh scripts/compile_plonk.sh` 
-3. Run `npx hardhat test to run the unit tests`
+The scripts contain all the information neccessary to generate groth16 and plonk proofs for circom circuits. 
+
+1. Install dependecies with `npm install` in the root directory.
+2. Run the groth16 and plonk scripts with `sh scripts/compile_groth16.sh` and `sh scripts/compile_plonk.sh`.
+3. Run `npx hardhat test` to run the unit tests.
 
 If you prefer to run the commands **manually**, the plonk setup is explained in-depth and the commands are described below.
 
@@ -143,7 +174,7 @@ The output is public. The verifier has access to it.
 
 ### Compile the circuit
 
-`circom multiplier.circom --r1cs --wasm --sym --c`
+Naviagate to the `build` directory, and run: `circom ../../circuits/circuit.circom --sym --wasm --r1cs`
 
 It's important to notice that by running this command it is generating two types of files:
 
@@ -172,7 +203,7 @@ The witness is the set of inputs, intermediate circuit signals and output genera
 
 For the sake of this example, the prover is choosing 2,1,3. The inputs are added in a .json file *in.json*
 
-To generate the witness `node multiplier_js/generate_witness.js multiplier_js/multiplier.wasm in.json witness.wtns`
+To generate the witness `node circuit_js/generate_witness.js circuit_js/circuit.wasm input.json witness.wtns`
 
 It is passing in 3 parameters:
 - `multiplier_js/multiplier.wasm` is the previously generated file needed to generate the witness 
@@ -191,19 +222,19 @@ The file describes the wires computed by the circuit. In simple terms, the inter
 
 ### Download the trusted setup (Powers of tau file) 
 
-`wget https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_11.ptau`
+`wget https://hermez.s3-eu-west-1.amazonaws.com/powersOfTau28_hez_final_16.ptau`
 
 It is a community-generated trusted setup. A trusted setup is an algorithm that determines a protocol’s public parameters using information that must remain secret to ensure the protocol’s security.
 
 ### Generate the verification key
 
-The verification key is generated starting from `multiplier.r1cs` (description of the circuit and its constraints) and `powersOfTau28_hez_final_11.ptau` which is the trusted setup. The output file of the operation is `multiplier.zkey`, namely the verification key for the circuit.
+The verification key is generated starting from `multiplier.r1cs` (description of the circuit and its constraints) and `powersOfTau28_hez_final_16.ptau` which is the trusted setup. The output file of the operation is `multiplier.zkey`, namely the verification key for the circuit.
 
-`snarkjs plonk setup multiplier.r1cs powersOfTau28_hez_final_11.ptau multiplier.zkey`
+`snarkjs plonk setup circuit.r1cs powersOfTau28_hez_final_16.ptau circuit_final.zkey`
 
 ### Get a verification key in json format (from the proving key)
 
-`snarkjs zkey export verificationkey multiplier.zkey verification_key.json` 
+`snarkjs zkey export verificationkey circuit_final.zkey verification_key.json` 
 <img width="661" alt="Screen Shot 2022-06-22 at 3 36 18 PM" src="https://user-images.githubusercontent.com/70081547/175165654-352b0d68-2ab5-4f71-a257-178677f224cf.png">
 
 ### Generate the proof
@@ -214,7 +245,7 @@ Let's zoom back for a second. The prover holds:
 
 The goal now is to generate a proof starting from these files and provide it to the verifier. 
 
-`snarkjs plonk prove multiplier.zkey witness.wtns proof.json public.json`
+`snarkjs plonk prove circuit_final.zkey witness.wtns proof.json public.json`
 
 The outputs are:
 - The proof of the computation (`proof.json`)
@@ -242,7 +273,7 @@ As you can see to do that I only need to have the verification key (`verificatio
 
 Snarkjs provides a tool that allows generating a solidity smart contract in order to validate this proof. It is generated starting from the multiplier.zkey. The output of the program is the `verifier.sol` file
 
-`snarkjs zkey export solidityverifier multiplier.zkey verifier.sol`
+`snarkjs zkey export solidityverifier circuit_final.zkey ../../contracts/plonk_verifier.sol`
 
 Now you can run this contract on remix (copy and paste it) 
 
