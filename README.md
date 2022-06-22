@@ -1,7 +1,7 @@
 # PLONK Tutorial
 README referenced and modified from https://github.com/enricobottazzi/ZKverse. Special thanks to Enrico from Polygon ID!
 
-# **Introduction to Zero Knowledge Proof**
+# **Introduction to Zero Knowledge Proofs**
 
 To understand zero knowledge proof, it is first necessary to define the 2 actors involved in the process and their roles:
 
@@ -86,7 +86,7 @@ Runs unit tests using etherJS and hardhat
 
 # **Circom and SnarkJS Demo**
 
-The demo illustrates a range proof: proving a number is within a range without revealing the actual number, which could be useful in applications like proving your income is in a required range when applying for a credit card without revealing your income. 
+The demo illustrates a **range proof**: proving a number is within a range without revealing the actual number. This could be useful in applications that require, for example, proving your income is in a specified range when applying for a credit card without revealing your specific income. 
 
 The scripts contain all the information neccessary to generate groth16 and plonk proofs for circom circuits. 
 
@@ -96,7 +96,7 @@ The scripts contain all the information neccessary to generate groth16 and plonk
 
 If you prefer to run the commands **manually**, the plonk setup is explained in-depth and the commands are described below.
 
-Each step of the demo, the data, the actors, and their actions are better explained in this board
+Each step of the demo, the data, the actors, and their actions are better explained in this board:
 <img width="755" alt="Screen Shot 2022-06-22 at 3 11 04 PM" src="https://user-images.githubusercontent.com/70081547/175161365-279d2948-623c-485a-9d79-99506b583390.png">
 
 Here's the link to the Miro board: https://miro.com/app/board/uXjVODmIOnk=/?invite_link_id=155047731605
@@ -168,9 +168,11 @@ The output is public. The verifier has access to it.
 
 ### Compile the circuit
 
-Naviagate to the `build` directory, and run: `circom ../../circuits/circuit.circom --sym --wasm --r1cs`
+Naviagate to the `build` directory, and run all of the following commands: 
 
-It's important to notice that by running this command it is generating two types of files:
+`circom ../../circuits/circuit.circom --sym --wasm --r1cs`
+
+It's important to notice that by running this command, it compiles the circuit and generates two types of files in the process:
 
 --r1cs it generates the file circuit.r1cs that contains the constraints of the circuit in binary format.
 
@@ -251,7 +253,7 @@ Here's the plonk proof:
 
 <img width="672" alt="Screen Shot 2022-06-22 at 3 36 38 PM" src="https://user-images.githubusercontent.com/70081547/175165681-691cbb10-dbcd-4bd0-a708-9555394c852a.png">
 
-## 5. Verify the proof
+## 5. Verify the proof via snarkjs
 
 Now the focus switches to the side of the verifier. The verifier only has access to the `public.json`, `proof.json` and `verification_key.json` files. 
 It is important to underline that none of these files contains information about the inputs chosen by the prover to run the computation.
