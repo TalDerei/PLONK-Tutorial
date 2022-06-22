@@ -1,5 +1,5 @@
 # PLONK Tutorial
-README modified from https://github.com/enricobottazzi/ZKverse. Special thanks to Enrico from Polygon ID!
+README referenced and modified from https://github.com/enricobottazzi/ZKverse. Special thanks to Enrico from Polygon ID!
 
 # **Introduction to Zero Knowledge Proof**
 
